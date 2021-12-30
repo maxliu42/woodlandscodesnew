@@ -1,0 +1,25 @@
+    <ul class="nav nav-pills nav-flush flex-column mb-auto text-center mt-3">
+        <!-- <li class="nav-item mt-4"> -->
+            {% if page.current_page == 'home' %}
+            <a href="/" class="nav-link active py-3" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Home">
+                <i style="font-size: 20px;" class="fas fa-home text-dark"></i>
+            </a>
+            {% else %}
+            <a href="/" class="nav-link py-3" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Home">
+                <i style="font-size: 20px;" class="fas fa-home text-light text-opacity-75"></i>
+            </a>
+            {% endif %}
+        <!-- </li> -->
+        <!-- <li class="nav-item"> -->
+            {% if page.current_page == 'lessons' %}
+            <a href="/lessons.html" class="nav-link active py-3" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Lessons">
+                <i style="font-size: 20px;" class="fas fa-chalkboard-teacher text-dark"></i>
+            </a>
+            {% else %}
+            <a href="/lessons.html" class="nav-link py-3" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Lessons">
+                <i style="font-size: 20px;" class="fas fa-chalkboard-teacher text-light text-opacity-75"></i>
+            </a>
+            {% endif %}
+        <!-- </li> -->
+    </ul>
+

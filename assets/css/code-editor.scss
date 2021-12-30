@@ -1,0 +1,83 @@
+@use "variables";
+
+.editor {
+    position: relative;
+    width: 100%;
+    height: 300px;
+}
+
+.editor-container {
+    width: 80%;
+    background-color: #424242;
+    margin-bottom: 1rem;
+}
+
+.input-output-container {
+    display: flex;
+}
+
+.input-container {
+    width: 50%;
+    height: 150px;
+    margin-right: 0.5rem;
+}
+
+.input {
+    width: 50%;
+    height: 100%;
+    resize: none;
+    background-color: variables.$code-editor-background;
+    border: none;
+    font-family: monospace;
+    white-space: pre;
+    overflow-wrap: normal;
+    overflow-x: scroll;
+    font-size: 0.75rem;
+    padding: 0.5rem;
+    color: #c4c4c4;
+}
+
+.input:focus {
+    outline: none;
+}
+
+.output-container {
+    padding: 0.5rem;
+    width: 50%;
+    height: 150px;
+    margin-left: 0.5rem;
+    background-color: variables.$code-editor-background;
+    border: none;
+    font-family: monospace;
+    white-space: pre;
+    overflow-wrap: normal;
+    overflow-x: scroll;
+    font-size: 0.75rem;
+}
+
+@media only screen and (max-width: 600px) {
+    .input-output-container {
+        display: block;
+    }
+
+    .output-container {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 1rem;
+    }
+
+    .input-container {
+        width: 100%;
+        margin-right: 0;
+    }
+
+    .editor-container {
+        width: 100%;
+    }
+}
+
+@media only screen and (min-width: 850px) {
+    .editor-container {
+        width: 100%;
+    }
+}
