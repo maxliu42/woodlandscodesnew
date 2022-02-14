@@ -83,6 +83,8 @@ RSA is an asymmetric public-private key cryptosystem created in 1977. It's named
 
 **Private:** d = 469
 
+### RSA Example
+
 **Encryption:**
 Bob gives n and e to Alice. Alice turns her message into numbers with an agreed-upon method
 (a = 01, b = 02, c = 03… z = 26)
