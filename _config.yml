@@ -46,7 +46,7 @@ description: >- # this means to ignore newlines until "baseurl:"
   Woodlands Computer Science Club
 
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://maxliu.me" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://woodlands.codes" # the base hostname & protocol for your site, e.g. http://example.com
 favicon: "/assets/img/favicon.png" # the favicon for your site
 favicon_brand: "/assets/img/logo.png"
 

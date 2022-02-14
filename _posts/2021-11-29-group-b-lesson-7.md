@@ -14,7 +14,7 @@ Welcome to the fourth meeting of group B! In this meeting, we'll go through the 
 
 The **first prototype** of our code runner Discord bot has been completed!
 
-It has the core functionality outlined in the [previous meeting](http://localhost:4000/group-b/2021/11/21/group-b-lesson-6.html#baseline-features) of security, performance, and language support using the code execution engine [Piston](https://github.com/engineer-man/piston). You can use the bot *right now* in our Discord server! Head over to the **#bot-spam** channel to use the bot.
+It has the core functionality outlined in the [previous meeting](http://localhost:4000/group-b/2021/11/21/group-b-lesson-6.html#baseline-features) of security, performance, and language support using the code execution engine [Piston](https://github.com/engineer-man/piston){:target="_blank"}. You can use the bot *right now* in our Discord server! Head over to the **#bot-spam** channel to use the bot.
 
 The bot will try to run *any* code you give it. Try your hardest to break it!
 
