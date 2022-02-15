@@ -74,7 +74,7 @@ You are constantly sending personal information over the internet. This can be a
 <img src="/assets/img/group-b/lesson-9/celltower.png" alt="" class="post-img-large img-transparency">
 
 {: style="text-align: center" }
-*5G  :flushed:*
+*Cell towers are used to triangulate your location.*
 
 It is important that commonly used protocols are secure and resist attackers who try to intercept data. Cybersecurity company Mimecast states: "The web and the use of DNS services specifically are part of 91% of all malware attacks, and email and web together are a key part for 99% of successful breaches." Funnily enough, [Mimecast themselves were hacked](https://threatpost.com/mimecast-certificate-microsoft-supply-chain-attack/162965/){:target="_blank"}, allowing cyberattackers to take over their incoming and outcoming email. Not so easy, is it?
 
