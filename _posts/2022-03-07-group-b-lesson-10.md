@@ -14,15 +14,48 @@ This is the second article of a series. The first article, "How the Internet Wor
 
 Encryption is the process of encoding information with some algorithm. The resulting *ciphertext* can only be decoded, or *decrypted* into *plaintext* by authorized parties. If you don't know how to reverse the algorithm, it should be almost impossible to attack using just the ciphertext. For example:
 
-`V org lbh unir ab jnl gb ernq guvf. Guvf vf njrfbzr!`
+`V ORG LBH UNIR AB JNL GB ERNQ GUVF. GUVF VF NJRFBZR!`
 
-This text is hard to understand unless you *know* how to decrypt it. This algorithm was used by Julius Caesar, and is called a *Caesar cipher*. A Caesar cipher shifts each letter with a letter some fixed number of positions down the alphabet. For example, a Caesar cipher right 2 would replace `A` with `C` and `F` with `H`. This particular text is encrypted using ROT13, which is a shift of 13. Try looking it up online and decoding it!
+This text is impossible to understand unless you *know* how to decrypt it. This algorithm was used by Julius Caesar, and is called a *Caesar cipher*. A Caesar cipher shifts each letter with a letter some fixed number of positions down the alphabet. For example, a Caesar cipher right 2 would replace `A` with `C` and `F` with `H`.
+
+{% highlight py %}
+def func_name(parameters):
+def caesar_cipher(plain_text, key):
+    encrypted = ""
+    for c in plain_text:
+        # This cipher only works on uppercase letters!
+        if c.isupper():
+            # Get unicode of letter, e.g. 'A' = 65, 'B' = 66
+            c_index = ord(c) - ord('A')
+            # Shift the current character by key positions
+            c_shifted = (c_index + key) % 26 + ord('A')
+            c_new = chr(c_shifted)
+            encrypted += c_new
+        else:
+            encrypted += c
+    return encrypted
+
+# Test with plaintext and key
+text = "V ORG LBH UNIR AB JNL GB ERNQ GUVF. GUVF VF NJRFBZR"
+key = 13
+print(caesar_cipher(text, key))
+{% endhighlight %}
+
+This particular text is encrypted using ROT13, which is a shift of 13. Try looking it up online and decoding it! To reverse the cipher, it can be applied again with (26 - key). Luckily for us, (26 - 13) = 13, therefore ROT13 decrypts itself.
+
+The [Vigenère cipher](https://www.boxentriq.com/code-breaking/vigenere-cipher){:target="_blank"} is a more complex cipher, using a series of Caesar Ciphers. Given a key like `BCD`, the cipher would shift every first letter by one, every second letter by two, and every third letter by three!
+
+For a fun cryptography exercise, try coding it and sending messages to your friends!
 
 <img src="/assets/img/group-b/lesson-10/enigma.png" alt="" class="post-img-large img-transparency">
 
-Alan Turing potentially saved millions of lives due to his knowledge of encryption. Pictured is the *Enigma machine* used by the Nazis in World War II. It was considered so secure by the Nazis that they used it to encipher top-secret messages. It used a complex, shifting mapping of the 26 letters onto itself. However, its major flaw was that a letter could never become itself. For example, a "P" would never be encoded as a "P". Turing used detailed information analysis and a few clever guesses to crack the cipher.
+Alan Turing potentially saved millions of lives due to his knowledge of encryption. Pictured is the *Enigma machine* used by the Nazis in World War II. It was considered so secure by the Nazis that they used it to encipher top-secret messages. It used a complex mapping of the 26 letters that changed daily. However, its major flaw was that a letter could never become itself. For example, a "P" would never be encoded as a "P". Turing used detailed information analysis and a few clever guesses to crack the cipher.
 
 So pay attention to cryptography. It can save your life---or destroy it.
+
+Recommended Reading: [Vigenère Cipher (Wikipedia)](https://en.wikipedia.org/wiki/Vigen%C3%A8re_cipher){:target="_blank"}, [List of Ciphertexts (Wikipedia)](https://en.wikipedia.org/wiki/List_of_ciphertexts:target="_blank"}).
+
+<iframe width="672" height="378" src="https://www.youtube.com/embed/G2_Q9FoD-oQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ### Symmetric-Key Encryption
 
@@ -57,6 +90,10 @@ And the most interesting thing? These two questions are *the same question!*
 So here we have a question that's hard to do one way, but easy to do the other. This "one-way" property can be used for encryption. However, it's possible that one-way functions don't exist, and we just haven't found the best algorithms yet. (Those of us who are curious can research the P vs NP problem.)
 
 **Here's the idea: Encrypt messages with a number, then decrypt them with its factorization.**
+
+Recommended Reading: [Public-key cryptography (Wikipedia)](https://en.wikipedia.org/wiki/Public-key_cryptography){:target="_blank"}.
+
+<iframe width="672" height="378" src="https://www.youtube.com/embed/YX40hbAHx3s" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## RSA
 
@@ -107,6 +144,7 @@ The series of two articles has covered:
 * Vulnerabilities such as phishing and data breaches
 * Why HTTPS is better: Transport Layer Security (TLS)
 * Introduction to cryptography
+* Caesar cipher, Vigenère cipher
 * Symmetric-Key Encryption: same secret key
 * Public-Key Encryption: separate decryption key and encryption key
 * "One-way" functions
@@ -115,3 +153,12 @@ The series of two articles has covered:
 Now we know why HTTPS is better: It uses TLS! We are currently on TLS 1.3, which does not use RSA, but uses a similar combination of symmetric-key and public-key cryptography systems. Now your data is safe!
 
 And remember kids... don't trust those HTTP websites.
+
+`20 08 05 05 14 04`
+
+`Tiit Vjgfnfrf cjpies it a ciu ocvjovs.`
+
+`GUVF EBG13 VF NYFB BOIVBHF, CEBONOYL ORPNHFR VG'F NYY HCCREPNFR`
+
+{: style="color:rgb(30,30,30)" }
+Goodbye! Four more days to March break---we can do this.
