@@ -160,5 +160,5 @@ And remember kids... don't trust those HTTP websites.
 
 `GUVF EBG13 VF NYFB BOIVBHF, CEBONOYL ORPNHFR VG'F NYY HCCREPNFR`
 
-{: style="color:rgb(30,30,30)" }
-Goodbye! Four more days to March break---we can do this.
+{: style="color:rgb(10,10,10)" }
+Hope you enjoyed the series!

@@ -109,5 +109,3 @@ Over the next five Group B meetings (before winter break), we'll be developing a
 4. First bit of code; creating core functionality
 5. Connecting bits and first complete iteration
 6. Deployment and things to iterate and improve on
-
-**We hope to see you back for next week's meeting as we continue our journey through software development!**
