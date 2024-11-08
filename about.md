@@ -12,7 +12,7 @@ A variety of topics awere covered, include competitive programming, software dev
 Our club was structured into two groups, **Group A** and **Group B**.
 Group A focused on teaching algorithms and competitive programming techniques, specifically for Waterloo's CCC held every February.
 Group B focused on software development, having completed and showcased projects including Discord bots, games, and websites. Check out the
-[Categories](categories.html){:target="_blank"} and [Tags](tags.html){:target="_blank"} for the content you want to see!
+[Categories](categories.html){:target="_blank"} and [Tags](tags.html){:target="_blank"} for the content you want to see. 
 
 Thanks for visiting our website!
 
