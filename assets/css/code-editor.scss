@@ -1,83 +1,128 @@
-@use "variables";
+---
+---
 
-.editor {
-    position: relative;
-    width: 100%;
-    height: 300px;
+div[is="code-editor"] {
+  display: block;
+  margin-bottom: 30px;
 }
 
 .editor-container {
-    width: 80%;
-    background-color: #424242;
-    margin-bottom: 1rem;
+  width: 100%;
+  background-color: #424242;
+  padding: 15px;
+  box-sizing: border-box;
+  border-radius: 4px;
+}
+
+.controls-container {
+  margin-bottom: 15px;
+}
+
+.editor {
+  width: 97%;
+  height: 200px;
+  border: 1px solid #555;
+  background-color: #1e1e1e;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", monospace;
+  font-size: 16px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.ace_editor {
+  padding: 10px;
+  font-size: 16px !important;
+}
+
+.ace_content {
+  width: calc(100% - 20px) !important;
 }
 
 .input-output-container {
-    display: flex;
+  display: flex;
+  gap: 20px;
+  background-color: #424242;
+  padding: 0;
+  border-radius: 4px;
+  height: 120px;
 }
 
-.input-container {
-    width: 50%;
-    height: 150px;
-    margin-right: 0.5rem;
+.input-container,
+.output-container {
+  flex: 1;
+  height: 100%;
+  min-width: 0;
 }
 
 .input {
-    width: 50%;
-    height: 100%;
-    resize: none;
-    background-color: variables.$code-editor-background;
-    border: none;
-    font-family: monospace;
-    white-space: pre;
-    overflow-wrap: normal;
-    overflow-x: scroll;
-    font-size: 0.75rem;
-    padding: 0.5rem;
-    color: #c4c4c4;
-}
-
-.input:focus {
-    outline: none;
+  width: 100%;
+  height: 100%;
+  resize: none;
+  background-color: #1e1e1e;
+  border: 1px solid #555;
+  color: #c4c4c4;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", monospace;
+  font-size: 16px;
+  padding: 10px;
+  box-sizing: border-box;
+  border-radius: 4px;
 }
 
 .output-container {
-    padding: 0.5rem;
-    width: 50%;
-    height: 150px;
-    margin-left: 0.5rem;
-    background-color: variables.$code-editor-background;
-    border: none;
-    font-family: monospace;
-    white-space: pre;
-    overflow-wrap: normal;
-    overflow-x: scroll;
-    font-size: 0.75rem;
+  background-color: #1e1e1e;
+  border: 1px solid #555;
+  color: #c4c4c4;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", monospace;
+  font-size: 16px;
+  padding: 10px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border-radius: 4px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  margin-right: 10px;
+  font-size: 16px;
+  color: white;
+  font-weight: 500;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+}
+
+.btn-primary {
+  background-color: #4caf50;
+}
+
+.btn-danger {
+  background-color: #f44336;
 }
 
 @media only screen and (max-width: 600px) {
-    .input-output-container {
-        display: block;
-    }
+  .input-output-container {
+    flex-direction: column;
+  }
 
-    .output-container {
-        width: 100%;
-        margin-left: 0;
-        margin-top: 1rem;
-    }
-
-    .input-container {
-        width: 100%;
-        margin-right: 0;
-    }
-
-    .editor-container {
-        width: 100%;
-    }
+  .input-container,
+  .output-container {
+    width: 100%;
+  }
 }
 
-@media only screen and (min-width: 850px) {
-    .editor-container {
-        width: 100%;
-    }
+.ace-monokai {
+  background-color: #1e1e1e;
 }

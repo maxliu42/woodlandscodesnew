@@ -6,10 +6,9 @@
   <meta property="og:image" content="https://i.imgur.com/1NpILAw.png"/>
   {%- seo -%}
   <link rel="shortcut icon" href="{{ site.favicon }}">
-  <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-noto-sans@0.0.72/index.min.css">
-  <link rel="stylesheet" href="/assets/css/code-editor.css">
+  <link rel="stylesheet" href="{{ '/assets/css/code-editor.css' | relative_url }}">
   <link rel="stylesheet" href="/assets/css/syntax.css">
   <link rel="stylesheet" href="{{ "/assets/css/main.css" | relative_url }}">
   <script src="{{ "/assets/js/main.js" | relative_url }}"></script>
@@ -19,4 +18,8 @@
   {%- endif -%}
   {%- include extensions/code-highlight.html -%}
   {%- include custom-head.html -%}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.0/ace.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.0/mode-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.0/theme-monokai.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.0/ext-language_tools.min.js"></script>
 </head>

@@ -1,208 +1,198 @@
 class CodeEditor extends HTMLDivElement {
-    constructor() {
-        super();
+  constructor() {
+    super();
+    this.editor = null;
+    this.outputDiv = null;
+    this.inputDiv = null;
+    this.runButton = null;
+    this.restartButton = null;
+    this.initialized = false;
+    this.skulptInitialized = false;
+  }
 
-        let id = this.getAttribute('id');
+  connectedCallback() {
+    if (this.initialized) return;
+    this.initialized = true;
 
-        this.setAttribute("class", "editor-container p-3 pt-0")
+    // Get initial content and input if provided
+    const content = this.textContent.trim();
+    const [code, inputs] = content.split("#####").map((s) => s.trim());
+    this.textContent = ""; // Clear the original content
 
-        let code_and_input = this.innerHTML.trim();
-        let code = '';
-        let input = '';
+    this.setupEditor(code);
+    this.setupInputOutput(inputs);
 
-        if (!code_and_input.includes('#####')) {
-            code = code_and_input;
-        } else {
-            code_and_input = code_and_input.split('#####');
-            code = code_and_input[0].trim();
-            input = code_and_input[1].trim();
-        }
+    // Initial load of Skulpt
+    this.loadSkulpt().catch((error) => {
+      console.error("Failed to load Skulpt:", error);
+    });
+  }
 
-        this.innerHTML = `
-        <button id="run-button-${id}" class="btn btn-primary my-3">Run</button>
-        <button id="terminate-button-${id}" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Clicking this will restart the Python interpreter, so be careful! Only do this if your program is taking too long to run." class="btn btn-danger my-3 ms-2">Restart Python</button>
-        <div class="editor" id="ace-editor-${id}">${code}</div>
-        <div class="mt-3 input-output-container">
-            <div data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-original-title="Input" class="d-block position-relative input-container">
-                <textarea id="input-${id}" class="input">${input}</textarea>
-            </div>
-            <div id="output-${id}" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-original-title="Output" class="output-container">
-    
-            </div>
-        </div>
-        `
+  setupEditor(initialCode) {
+    // Create main container
+    const mainContainer = document.createElement("div");
+    mainContainer.className = "editor-container";
 
-        const editor = ace.edit(`ace-editor-${id}`);
-        editor.setTheme("ace/theme/monokai");
-        editor.session.setMode("ace/mode/python");
+    // Create controls container
+    const controlsContainer = document.createElement("div");
+    controlsContainer.className = "controls-container";
 
+    // Create Run button
+    this.runButton = document.createElement("button");
+    this.runButton.textContent = "Run";
+    this.runButton.className = "btn btn-primary";
 
-        document.getElementById(`run-button-${id}`).onclick = async () => {
-            await runPython(editor.getValue(), `input-${id}`, `output-${id}`);
-        };
+    // Create Restart button
+    this.restartButton = document.createElement("button");
+    this.restartButton.textContent = "Restart Python";
+    this.restartButton.className = "btn btn-danger";
 
-        document.getElementById(`terminate-button-${id}`).onclick = async () => {
-            await terminatePyodide();
-        };
+    // Add button event listeners
+    this.runButton.addEventListener("click", () => this.runCode());
+    this.restartButton.addEventListener("click", () => this.loadSkulpt());
+
+    // Set up Ace Editor
+    const editorDiv = document.createElement("div");
+    editorDiv.className = "editor";
+
+    // Initialize Ace Editor
+    this.editor = ace.edit(editorDiv);
+    this.editor.setTheme("ace/theme/monokai");
+    this.editor.session.setMode("ace/mode/python");
+    this.editor.setOptions({
+      fontSize: "16px",
+      showPrintMargin: false,
+      enableBasicAutocompletion: true,
+      enableLiveAutocompletion: true,
+    });
+
+    if (initialCode) {
+      this.editor.setValue(initialCode, -1);
     }
-}
 
+    // Add elements to the main container
+    controlsContainer.appendChild(this.runButton);
+    controlsContainer.appendChild(this.restartButton);
+    mainContainer.appendChild(controlsContainer);
+    mainContainer.appendChild(editorDiv);
 
+    // Add the main container to the DOM
+    this.appendChild(mainContainer);
+  }
 
-customElements.define('code-editor', CodeEditor, { extends: "div" });
+  setupInputOutput(initialInput) {
+    const ioContainer = document.createElement("div");
+    ioContainer.className = "input-output-container";
 
-import { asyncRun, asyncTerminate, asyncCheckReady } from "/assets/js/py-worker.js";
+    // Create input container
+    const inputContainer = document.createElement("div");
+    inputContainer.className = "input-container";
+    this.inputDiv = document.createElement("textarea");
+    this.inputDiv.className = "input";
+    this.inputDiv.placeholder = "Program input (one value per line)";
+    if (initialInput) {
+      this.inputDiv.value = initialInput;
+    }
+    inputContainer.appendChild(this.inputDiv);
 
-async function checkReady() {
-    const { ready } = await asyncCheckReady();
-    readyToast.show()    
-}
+    // Create output container
+    this.outputDiv = document.createElement("div");
+    this.outputDiv.className = "output-container";
 
-async function main() {
-    loadingToast.show();
-    await checkReady();
-    loadingToast.hide();
-}
+    ioContainer.appendChild(inputContainer);
+    ioContainer.appendChild(this.outputDiv);
 
-main();
+    // Add to the existing editor container instead of creating a new one
+    this.querySelector(".editor-container").appendChild(ioContainer);
+  }
 
+  loadSkulpt() {
+    // If Skulpt is already loaded, just reinitialize it
+    if (window.Sk) {
+      this.initializeSkulpt();
+      return Promise.resolve();
+    }
 
-async function runPython(script, input_id, output_id) {
-    let stdin = document.getElementById(input_id).value;
+    // Only load scripts if they haven't been loaded yet
+    if (!document.querySelector('script[src*="skulpt.min.js"]')) {
+      const skulptScript = document.createElement("script");
+      skulptScript.src = "https://skulpt.org/js/skulpt.min.js";
+      document.head.appendChild(skulptScript);
+
+      const skulptStdLibScript = document.createElement("script");
+      skulptStdLibScript.src = "https://skulpt.org/js/skulpt-stdlib.js";
+      document.head.appendChild(skulptStdLibScript);
+
+      return Promise.all([
+        new Promise((resolve) => (skulptScript.onload = resolve)),
+        new Promise((resolve) => (skulptStdLibScript.onload = resolve)),
+      ]).then(() => {
+        this.initializeSkulpt();
+      });
+    }
+
+    return Promise.resolve();
+  }
+
+  initializeSkulpt() {
+    if (!window.Sk) {
+      console.error("Skulpt not loaded yet");
+      return;
+    }
+
+    this.skulptInitialized = true;
+    this.runButton.disabled = false;
+  }
+
+  async runCode() {
+    this.outputDiv.textContent = "";
+    this.runButton.disabled = true;
+
     try {
-        const { results, error } = await asyncRun(script, stdin);
-        if (results !== undefined) {
+      // Make sure Skulpt is loaded and initialized
+      if (!this.skulptInitialized) {
+        await this.loadSkulpt();
+      }
 
-            document.getElementById(output_id).innerText = results;
-        } else if (error) {
-            document.getElementById(output_id).innerText = error;
-        }
-    } catch (e) {
-        document.getElementById(output_id).innerText = e.message
+      const code = this.editor.getValue();
+      const inputs = this.inputDiv.value.split("\n").filter((x) => x);
+      let inputIndex = 0;
+
+      // Configure Skulpt just before running the code
+      Sk.configure({
+        output: (text) => {
+          this.outputDiv.textContent += text;
+        },
+        read: (filename) => {
+          if (
+            Sk.builtinFiles === undefined ||
+            Sk.builtinFiles["files"][filename] === undefined
+          ) {
+            throw new Error(`File not found: ${filename}`);
+          }
+          return Sk.builtinFiles["files"][filename];
+        },
+        inputfun: () => {
+          if (inputIndex >= inputs.length) {
+            throw new Error("Not enough input values provided");
+          }
+          return Promise.resolve(inputs[inputIndex++]);
+        },
+        __future__: Sk.python3,
+      });
+
+      const programPromise = Sk.misceval.asyncToPromise(() => {
+        return Sk.importMainWithBody("<stdin>", false, code, true);
+      });
+
+      await programPromise;
+    } catch (error) {
+      this.outputDiv.textContent += `\nError: ${error.toString()}`;
+    } finally {
+      this.runButton.disabled = false;
     }
+  }
 }
 
-async function terminatePyodide() {
-    asyncTerminate();
-    loadingToast.show()    
-    await checkReady();
-    loadingToast.hide();
-}
-
-
-
-
-// Uncomment the below lines to use Skulpt
-
-// function outf(text) {
-//     const output_element = document.getElementById("output");
-//     output_element.innerText = output_element.innerText + text;
-// }
-
-
-// var current_inp = 0;
-
-// function get_input(prompt) {
-//     return new Promise((resolve, reject) => {
-//         let input = document.getElementById('input-tmp').value.trim().split(/\r?\n/);
-//         if (input[0] == '') {
-//             input = [];
-//         }
-//         if (current_inp >= input.length) {
-//             throw "Place your input(s) in the \"input\" box!";
-//         }
-//         resolve(input[current_inp]);
-//         current_inp++;
-//     })
-// }
-
-// function runit() {
-//     var prog = editor.getValue();
-//     current_inp = 0;
-//     var output_element = document.getElementById("output");
-//     output_element.innerText = '';
-//     Sk.pre = "output";
-//     Sk.configure({ 
-//         output: outf, 
-//         inputfun: get_input, 
-//         inputfunTakesPrompt: true, 
-//         execLimit: 1000,
-//         __future__: Sk.python3
-//     });
-//     var myPromise = Sk.misceval.asyncToPromise(function () {
-//         return Sk.importMainWithBody("<stdin>", false, prog, true);
-//     });
-//     myPromise.then(function (mod) {
-
-//     },
-//         function (err) {
-//             output_element.innerText = err.toString();
-//         });
-// }
-
-
-// Uncomment below lines to use the old implementation of Pyodide
-
-// async function setup_pyodide() {
-//     // setup pyodide environment to run code blocks as needed
-//     let pyodide = await pyodideReadyPromise;
-//     var setup_code = `
-// import sys, io, traceback
-// import signal
-
-
-
-// from js import document, console
-// namespace = {}  # use separate namespace to hide run_code, modules, etc.
-// def run_code(code):
-//     """run specified code and return stdout and stderr"""
-//     out = io.StringIO()
-//     sys.stdin = io.StringIO(document.getElementById('input-tmp').value)
-//     oldout = sys.stdout
-//     olderr = sys.stderr
-//     sys.stdout = sys.stderr = out
-//     try:
-//         # change next line to exec(code, {}) if you want to clear vars each time
-
-//         class Timeout(Exception):
-//             pass
-
-//         def handler(sig, frame):
-//             raise Timeout
-
-//         signal.signal(signal.SIGALRM, handler)  # register interest in SIGALRM events
-
-//         signal.alarm(2)  # timeout in 2 seconds
-//         try:
-//             exec(code, {})
-//         except Timeout:
-//             print('Your code took too much time to run!')
-
-//     except:
-//         traceback.print_exc()
-
-//     sys.stdout = oldout
-//     sys.stderr = olderr
-//     return out.getvalue()
-// `
-//     pyodide.runPython(setup_code)
-// }
-
-// async function runPython() {
-//     // run code currently stored in editor
-//     let pyodide = await pyodideReadyPromise;
-//     pyodide.globals.code_to_run = editor.getValue()
-//     document.getElementById("output").innerText = pyodide.runPython('run_code(code_to_run)')
-// }
-
-// async function get_pyodide() {
-//     let pyodide = await loadPyodide({
-//         indexURL: "https://cdn.jsdelivr.net/pyodide/v0.18.1/full/",
-//     });
-//     return pyodide;
-
-// }
-
-// let pyodideReadyPromise = get_pyodide();
-
-// pyodideReadyPromise.then(setup_pyodide)
+// Register the custom element
+customElements.define("code-editor", CodeEditor, { extends: "div" });
