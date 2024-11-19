@@ -142,7 +142,7 @@ code_badge:
   enabled: "true"
   color: "#fff"
   background_color: "#126f21"
-  text_transform: "uppercase"  # ("uppercase", "lowercase", "capitalize")
+  text_transform: "uppercase" # ("uppercase", "lowercase", "capitalize")
 
 # If you want to link only specific pages in your header, uncomment
 # this and add the path to the pages in order as they should show up
@@ -205,3 +205,6 @@ plugins:
   - jekyll-sitemap
   - jekyll-paginate
   - jekyll-spaceship
+
+sass:
+  style: compressed
