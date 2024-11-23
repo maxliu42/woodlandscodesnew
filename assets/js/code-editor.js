@@ -7,7 +7,8 @@ class CodeEditor extends HTMLDivElement {
     this.runButton = null;
     this.restartButton = null;
     this.initialized = false;
-    this.skulptInitialized = false;
+    this.worker = null;
+    this.currentRunId = 0;
   }
 
   connectedCallback() {
@@ -21,11 +22,7 @@ class CodeEditor extends HTMLDivElement {
 
     this.setupEditor(code);
     this.setupInputOutput(inputs);
-
-    // Initial load of Skulpt
-    this.loadSkulpt().catch((error) => {
-      console.error("Failed to load Skulpt:", error);
-    });
+    this.initializePyodide();
   }
 
   setupEditor(initialCode) {
@@ -41,15 +38,17 @@ class CodeEditor extends HTMLDivElement {
     this.runButton = document.createElement("button");
     this.runButton.textContent = "Run";
     this.runButton.className = "btn btn-primary";
+    this.runButton.disabled = true;
 
     // Create Restart button
     this.restartButton = document.createElement("button");
     this.restartButton.textContent = "Restart Python";
     this.restartButton.className = "btn btn-danger";
+    this.restartButton.disabled = true;
 
     // Add button event listeners
     this.runButton.addEventListener("click", () => this.runCode());
-    this.restartButton.addEventListener("click", () => this.loadSkulpt());
+    this.restartButton.addEventListener("click", () => this.initializePyodide());
 
     // Set up Ace Editor
     const editorDiv = document.createElement("div");
@@ -96,101 +95,71 @@ class CodeEditor extends HTMLDivElement {
     inputContainer.appendChild(this.inputDiv);
 
     // Create output container
-    this.outputDiv = document.createElement("div");
-    this.outputDiv.className = "output-container";
+    const outputContainer = document.createElement("div");
+    outputContainer.className = "output-container";
+    this.outputDiv = document.createElement("pre");
+    this.outputDiv.className = "output";
+    outputContainer.appendChild(this.outputDiv);
 
     ioContainer.appendChild(inputContainer);
-    ioContainer.appendChild(this.outputDiv);
+    ioContainer.appendChild(outputContainer);
 
-    // Add to the existing editor container instead of creating a new one
+    // Add to the existing editor container
     this.querySelector(".editor-container").appendChild(ioContainer);
   }
 
-  loadSkulpt() {
-    // If Skulpt is already loaded, just reinitialize it
-    if (window.Sk) {
-      this.initializeSkulpt();
-      return Promise.resolve();
+  initializePyodide() {
+    // Terminate existing worker if any
+    if (this.worker) {
+      this.worker.terminate();
     }
 
-    // Only load scripts if they haven't been loaded yet
-    if (!document.querySelector('script[src*="skulpt.min.js"]')) {
-      const skulptScript = document.createElement("script");
-      skulptScript.src = "https://skulpt.org/js/skulpt.min.js";
-      document.head.appendChild(skulptScript);
-
-      const skulptStdLibScript = document.createElement("script");
-      skulptStdLibScript.src = "https://skulpt.org/js/skulpt-stdlib.js";
-      document.head.appendChild(skulptStdLibScript);
-
-      return Promise.all([
-        new Promise((resolve) => (skulptScript.onload = resolve)),
-        new Promise((resolve) => (skulptStdLibScript.onload = resolve)),
-      ]).then(() => {
-        this.initializeSkulpt();
-      });
-    }
-
-    return Promise.resolve();
-  }
-
-  initializeSkulpt() {
-    if (!window.Sk) {
-      console.error("Skulpt not loaded yet");
-      return;
-    }
-
-    this.skulptInitialized = true;
-    this.runButton.disabled = false;
-  }
-
-  async runCode() {
-    this.outputDiv.textContent = "";
     this.runButton.disabled = true;
+    this.restartButton.disabled = true;
+    this.outputDiv.textContent = "Initializing Python...";
 
-    try {
-      // Make sure Skulpt is loaded and initialized
-      if (!this.skulptInitialized) {
-        await this.loadSkulpt();
+    // Create new worker
+    this.worker = new Worker("/assets/js/py-worker.js");
+
+    this.worker.onmessage = (event) => {
+      const { type, error, output, id } = event.data;
+
+      if (type === "ready") {
+        this.runButton.disabled = false;
+        this.restartButton.disabled = false;
+        this.outputDiv.textContent = "Python ready!";
+      } else if (type === "error") {
+        if (error.includes("Pyodide")) {
+          this.outputDiv.textContent = "Failed to initialize Python. Please try again.";
+        } else {
+          this.outputDiv.textContent = error;
+        }
+        this.runButton.disabled = false;
+        this.restartButton.disabled = false;
+      } else if (type === "success" && id === this.currentRunId) {
+        this.outputDiv.textContent = output;
+        this.runButton.disabled = false;
       }
+    };
 
-      const code = this.editor.getValue();
-      const inputs = this.inputDiv.value.split("\n").filter((x) => x);
-      let inputIndex = 0;
+    // Initialize the worker
+    this.worker.postMessage({ type: "init" });
+  }
 
-      // Configure Skulpt just before running the code
-      Sk.configure({
-        output: (text) => {
-          this.outputDiv.textContent += text;
-        },
-        read: (filename) => {
-          if (
-            Sk.builtinFiles === undefined ||
-            Sk.builtinFiles["files"][filename] === undefined
-          ) {
-            throw new Error(`File not found: ${filename}`);
-          }
-          return Sk.builtinFiles["files"][filename];
-        },
-        inputfun: () => {
-          if (inputIndex >= inputs.length) {
-            throw new Error("Not enough input values provided");
-          }
-          return Promise.resolve(inputs[inputIndex++]);
-        },
-        __future__: Sk.python3,
-      });
+  runCode() {
+    this.runButton.disabled = true;
+    this.outputDiv.textContent = "Running...";
 
-      const programPromise = Sk.misceval.asyncToPromise(() => {
-        return Sk.importMainWithBody("<stdin>", false, code, true);
-      });
+    const code = this.editor.getValue();
+    const inputs = this.inputDiv.value.split("\n").filter(x => x);
+    this.currentRunId++;
 
-      await programPromise;
-    } catch (error) {
-      this.outputDiv.textContent += `\nError: ${error.toString()}`;
-    } finally {
-      this.runButton.disabled = false;
-    }
+    this.worker.postMessage({
+      type: "run",
+      id: this.currentRunId,
+      code,
+      inputs
+    });
   }
 }
 
