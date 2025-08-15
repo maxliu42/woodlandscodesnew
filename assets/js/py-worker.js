@@ -91,12 +91,11 @@ def input(prompt=""):
       const output = await pyodide.runPython("''.join(__output)");
 
       // Send the captured output back
-      self.postMessage({ 
-        type: "success", 
-        id, 
-        output: output 
+      self.postMessage({
+        type: "success",
+        id,
+        output: output,
       });
-
     } catch (error) {
       self.postMessage({
         type: "error",

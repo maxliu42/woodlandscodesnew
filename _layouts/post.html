@@ -17,9 +17,12 @@ sidebar:
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.0/ace.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.0/theme-monokai.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.0/mode-python.min.js"></script>
-    <script type="module" src="/assets/js/code-editor.js"></script>
+    <script
+      type="module"
+      src="{{ '/assets/js/code-editor.js' | relative_url }}"
+    ></script>
     {% endif %}
-    <script src="/assets/js/script.js"></script>
+    <script src="{{ '/assets/js/script.js' | relative_url }}"></script>
 
     {%- assign name = 'banner' -%} {%- include functions.html func='get_value'
     -%} {%- assign banner = return -%} {%- assign name = 'hidden' -%} {%-
