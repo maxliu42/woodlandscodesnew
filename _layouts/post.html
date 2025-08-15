@@ -19,10 +19,10 @@ sidebar:
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.0/mode-python.min.js"></script>
     <script
       type="module"
-      src="{{ '/assets/js/code-editor.js' | relative_url }}"
+      src="{{ site.baseurl }}/assets/js/code-editor.js"
     ></script>
     {% endif %}
-    <script src="{{ '/assets/js/script.js' | relative_url }}"></script>
+    <script src="{{ site.baseurl }}/assets/js/script.js"></script>
 
     {%- assign name = 'banner' -%} {%- include functions.html func='get_value'
     -%} {%- assign banner = return -%} {%- assign name = 'hidden' -%} {%-

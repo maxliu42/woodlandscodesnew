@@ -1,4 +1,9 @@
 <div class="site-brand-inner">
-  <img class="site-favicon" title="{{ site.title | escape }}" src="{{ site.favicon_brand | relative_url }}" onerror="this.style.display='none'">
-  <a class="site-title" href="{{ "/" | relative_url }}">{{ site.title | escape }}</a>
+  <img
+    class="site-favicon"
+    title="{{ site.title | escape }}"
+    src="{{ site.baseurl }}{{ site.favicon_brand }}"
+    onerror="this.style.display='none'"
+  />
+  <a class="site-title" href="{{ site.baseurl }}/">{{ site.title | escape }}</a>
 </div>
